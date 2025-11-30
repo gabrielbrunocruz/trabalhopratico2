@@ -1,0 +1,26 @@
+{
+  "name": "trabalhopratico2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "json-server --watch ./db/db.json"
+  },
+  "dependencies": {
+    "json-server": "^0.17.4"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gabrielbrunocruz/trabalhopratico2.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/gabrielbrunocruz/trabalhopratico2/issues"
+  },
+  "homepage": "https://github.com/gabrielbrunocruz/trabalhopratico2#readme"
+}
