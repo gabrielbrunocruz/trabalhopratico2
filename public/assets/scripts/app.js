@@ -125,7 +125,7 @@ async function toggleFavorito(usuario, pontoId) {
     if (response.ok) {
         // 2. Atualiza o sessionStorage
         usuario.favoritos = novosFavoritos;
-        setUsuarioLogado(usuario); 
+        setUsuarioLogado(usuario);
 
         // 3. LÓGICA DE RE-RENDERIZAÇÃO: Verifica a página atual
 
@@ -133,19 +133,19 @@ async function toggleFavorito(usuario, pontoId) {
             // 🎯 AÇÃO NA PÁGINA DE FAVORITOS: Recarrega a lista filtrada.
             // O card do item desmarcado sumirá automaticamente.
             carregarFavoritos();
-            
+
         } else if (container && window.location.pathname.endsWith('index.html')) {
             // AÇÃO NA HOME: Re-renderiza o card atual para atualizar o ícone.
             const termoAtual = campoPesquisa.value || '';
             const pontosFiltrados = todosOsPontos.filter(ponto => {
-                 const nome = ponto.nome.toLowerCase();
-                 const descricao = ponto.descricao.toLowerCase();
-                 const termo = termoAtual.toLowerCase().trim();
-                 return nome.includes(termo) || descricao.includes(termo);
+                const nome = ponto.nome.toLowerCase();
+                const descricao = ponto.descricao.toLowerCase();
+                const termo = termoAtual.toLowerCase().trim();
+                return nome.includes(termo) || descricao.includes(termo);
             });
             renderizarCards(pontosFiltrados);
         }
-        
+
     } else {
         alert("Erro ao atualizar favoritos.");
     }
@@ -190,12 +190,12 @@ async function carregarFavoritos() {
         const todosOsPontos = await resposta.json();
 
         const pontosFavoritos = todosOsPontos.filter(ponto => {
-            // 🎯 CORREÇÃO: Garante que o ID do ponto (ponto.id) seja um NÚMERO na comparação
+
             return idsFavoritos.includes(Number(ponto.id));
         });
 
         if (pontosFavoritos.length > 0) {
-            // Reutiliza renderizarCards
+
             renderizarCards(pontosFavoritos);
         } else {
             if (mensagemStatus) mensagemStatus.textContent = "Sua lista de favoritos está vazia. Adicione alguns pontos!";
@@ -286,7 +286,7 @@ function adicionarOuvinteFavoritar() {
                 return;
             }
 
-            // 🎯 CORREÇÃO: Converte a STRING do data-id para NÚMERO
+
             const pontoId = parseInt(e.currentTarget.getAttribute('data-id'));
 
             toggleFavorito(usuario, pontoId);
@@ -300,10 +300,17 @@ function atualizarInterfaceMenu() {
     const menuFavoritos = document.getElementById('menu-favoritos');
     const menuLogoutBloco = document.getElementById('menu-logout');
 
+
+    const btnAdicionarPonto = document.getElementById('btn-adicionar-ponto');
+
     if (usuario) {
+
         if (menuLoginBloco) menuLoginBloco.classList.add('d-none');
         if (menuFavoritos) menuFavoritos.classList.remove('d-none');
         if (menuLogoutBloco) menuLogoutBloco.classList.remove('d-none');
+
+
+        if (btnAdicionarPonto) btnAdicionarPonto.classList.remove('d-none');
 
         const logoutButton = menuLogoutBloco.querySelector('button');
         if (logoutButton && !logoutButton.hasAttribute('data-initialized')) {
@@ -311,9 +318,13 @@ function atualizarInterfaceMenu() {
             logoutButton.setAttribute('data-initialized', 'true');
         }
     } else {
+
         if (menuLoginBloco) menuLoginBloco.classList.remove('d-none');
         if (menuFavoritos) menuFavoritos.classList.add('d-none');
         if (menuLogoutBloco) menuLogoutBloco.classList.add('d-none');
+
+
+        if (btnAdicionarPonto) btnAdicionarPonto.classList.add('d-none');
     }
 }
 
@@ -383,6 +394,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
+    const formCadastroPonto = document.getElementById('form-cadastro-ponto');
+    const mensagemCadastroPonto = document.getElementById('mensagem-cadastro-ponto');
+
+    if (formCadastroPonto) {
+        formCadastroPonto.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+
+            const novoPonto = {
+                nome: document.getElementById('nome-ponto').value,
+                descricao: document.getElementById('descricao-ponto').value,
+                imagemPrincipal: {
+                    url: document.getElementById('url-imagem').value,
+                    Fonte: document.getElementById('fonte-imagem').value || 'Desconhecida'
+                },
+
+                Imagens: [],
+                Fonte2: document.getElementById('fonte-imagem').value || 'Desconhecida'
+            };
+
+            mensagemCadastroPonto.textContent = "Salvando ponto...";
+            mensagemCadastroPonto.style.color = 'black';
+
+
+            const sucesso = await cadastrarNovoPonto(novoPonto);
+
+            if (sucesso) {
+                mensagemCadastroPonto.textContent = "Ponto salvo com sucesso! Recarregando...";
+
+
+                const modalElement = document.getElementById('modalCadastroPonto');
+                const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                if (modalInstance) modalInstance.hide();
+
+                window.location.reload();
+            } else {
+                mensagemCadastroPonto.textContent = "Falha ao salvar. Verifique se o JSON Server está ativo.";
+                mensagemCadastroPonto.style.color = 'red';
+            }
+        });
+    }
+
+
+
     if (window.location.pathname.endsWith('favoritos.html')) {
         carregarFavoritos();
     } else if (container) {
@@ -390,8 +445,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
+
     atualizarInterfaceMenu();
 });
+
+
+
+async function cadastrarNovoPonto(dadosDoPonto) {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dadosDoPonto)
+        });
+
+        if (response.ok) {
+            return true;
+        } else {
+            console.error("Erro ao cadastrar. Status:", response.status);
+            return false;
+        }
+    } catch (error) {
+        console.error("Erro de conexão com o JSON Server:", error);
+        return false;
+    }
+}
 //mapa
 const centralLatLong = [-44.2, -20.15]; // Brumadinho
 
