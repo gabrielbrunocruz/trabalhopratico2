@@ -110,12 +110,12 @@ async function toggleFavorito(usuario, pontoId) {
     const isFavorito = novosFavoritos.includes(pontoId);
 
     if (isFavorito) {
-        novosFavoritos = novosFavoritos.filter(id => id !== pontoId); // Remove
+        novosFavoritos = novosFavoritos.filter(id => id !== pontoId); 
     } else {
-        novosFavoritos.push(pontoId); // Adiciona
+        novosFavoritos.push(pontoId); 
     }
 
-    // 1. Atualiza o JSON Server (PATCH)
+    
     const response = await fetch(`${API_USERS_URL}/${usuario.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -123,19 +123,18 @@ async function toggleFavorito(usuario, pontoId) {
     });
 
     if (response.ok) {
-        // 2. Atualiza o sessionStorage
+        
         usuario.favoritos = novosFavoritos;
         setUsuarioLogado(usuario);
 
-        // 3. LÓGICA DE RE-RENDERIZAÇÃO: Verifica a página atual
+        
 
         if (window.location.pathname.endsWith('favoritos.html')) {
-            // 🎯 AÇÃO NA PÁGINA DE FAVORITOS: Recarrega a lista filtrada.
-            // O card do item desmarcado sumirá automaticamente.
+            
             carregarFavoritos();
 
         } else if (container && window.location.pathname.endsWith('index.html')) {
-            // AÇÃO NA HOME: Re-renderiza o card atual para atualizar o ícone.
+            
             const termoAtual = campoPesquisa.value || '';
             const pontosFiltrados = todosOsPontos.filter(ponto => {
                 const nome = ponto.nome.toLowerCase();
@@ -171,7 +170,7 @@ async function carregarPontos() {
 }
 
 async function carregarFavoritos() {
-    // Define as referências de DOM específicas para esta função
+    
     const favoritosContainer = document.getElementById("cards-container");
     const mensagemStatus = document.getElementById("mensagem-status");
     const usuario = getUsuarioLogado();
